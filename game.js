@@ -3,7 +3,7 @@ enchant();                          // おまじない
 window.addEventListener('load', function(){
     game = new Game(320, 320); 
     game.fps = 24;                  
-    game.preload(['./img/miku.gif','./img/font.png','./img/negi.png','./img/enemy.png','./img/back.jpg']);
+    game.preload(['./img/miku.gif','./img/negi.png','./img/enemy.png','./img/back.jpg']);
     game.overFlag = false;
 
     game.addEventListener('load', function(){
@@ -25,10 +25,10 @@ window.addEventListener('load', function(){
 
     	  player.addEventListener('enterframe',function(){
 		        //画面端チェック
-		        if( this.x < 0){		
+		        if(this.x < 0){		
                 this.x = 0;
             }
-		        if( this.y < 0){
+		        if(this.y < 0){
 		            this.y = 0;
 		        }
             var rightEnd = game.width - this.width;
@@ -43,11 +43,7 @@ window.addEventListener('load', function(){
             if(game.overFlag){
                 this.frame = 3;
             }else{
-                if(this.left){
-                    this.frame = 0;
-                }else{
-                    this.frame = 7;
-                }
+                this.left ? this.frame = 0 : this.frame = 7;
             }
 		        if( game.input.left ){
                 this.x -= 5;
@@ -72,11 +68,7 @@ window.addEventListener('load', function(){
                 if(game.overFlag){
                     this.frame = 3;
                 }else{
-                    if(this.left){
-                        this.frame = game.frame % 2 + 1;
-                    }else{
-                        this.frame = game.frame % 2 + 5;
-                    }
+                    this.left ? this.frame = game.frame % 2 + 1 : this.frame = game.frame % 2 + 5;
                 }
             };
             if( game.input.down ){
@@ -84,16 +76,12 @@ window.addEventListener('load', function(){
                 if(game.overFlag){
                     this.frame = 3;
                 }else{
-                    if(this.left){
-                        this.frame = game.frame % 2 + 1;
-                    }else{
-                        this.frame = game.frame % 2 + 5;
-                    }
+                    this.left ? this.frame = game.frame % 2 + 1 : this.frame = game.frame % 2 + 5;
                 }
             };
 	      });
 	      game.rootScene.addChild(player);
-//        
+
 	      scoreLabel = new Label("");         // スコアの表示 
         scoreLabel.x = scoreLabel.y = 8;
 	      scoreLabel.color = "#ffffff";
@@ -101,21 +89,7 @@ window.addEventListener('load', function(){
             this.text =" TIME: " + (120 - game.frameCount/game.fps).toFixed(2);
         });
 	      game.rootScene.addChild(scoreLabel);
-//	      
-        // game.rootScene.addEventListener('touchstart', function(e){
-		    //     player.x = e.localX;
-		    //     player.y = e.localY;
-        // });
-        
-        // game.rootScene.addEventListener('touchmove', function(e){
-        //     if(player.x - e.localX < 0){
-        //         player.frame = game.frame % 2 + 5;
-        //     }else{
-        //         player.frame = game.frame % 2 + 1;
-        //     }
-        //     player.x = e.localX;
-	      //     player.y = e.localY;
-        // });
+
 	      //毎回する処理
         game.rootScene.addEventListener('enterframe',function(){
             var count = game.frameCount / game.fps;
@@ -178,17 +152,9 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
 	              game.rootScene.removeChild(this);
             }else{
                 if(setImage == "./img/enemy.png"){
-                    if(flag){
-                        this.y += 3;
-                    }else{
-                        this.y -= 3;
-                    }
+                    flag ? this.y += 3 : this.y -= 3;
                 }else{
-                    if(flag){
-                        this.x += 3;
-                    }else{
-                        this.x -= 3;
-                    }
+                    flag ? this.x += 3 : this.x -= 3;
                 }
 	          }
         });
@@ -199,21 +165,13 @@ var Enemiku = enchant.Class.create(Enemy, {
     initialize: function(game, flag){
         Enemy.call(this, 12, 12, game, './img/enemy.png', flag);
         this.x = rand(304);
-        if(flag){
-            this.y = 0;
-        }else{
-            this.y = game.height;
-        }
+        flag ? this.y = 0 : this.y = game.height;
     }
 });
 var Enegi = enchant.Class.create(Enemy, {
     initialize: function(game, flag){
         Enemy.call(this, 16, 16, game, './img/negi.png', flag);
-        if(flag){
-            this.x = 0;
-        }else{
-            this.x = game.width;
-        }
+        flag ? this.x = 0 : this.x = game.width;
         this.y = rand(304);
     }
 });
