@@ -93,30 +93,21 @@ window.addEventListener('load', function(){
 	      //毎回する処理
         game.rootScene.addEventListener('enterframe',function(){
             var count = game.frameCount / game.fps;
-            var f = false;
-            if(rand(2) == 0){
-                f = true;
-            }
  	          if(count < 15){
-	              if(game.frame % 8 == 0){ 
-                    new Enemiku(game, f);
+	              if(game.frame % 12 == 0){ 
+                    new Enemy(game);
 	              }
             }else if(count > 15 && count < 30){
+	              if(game.frame % 10 == 0){
+                    new Enemy(game);
+	              }
+            }else if(count > 30 && count < 90){
 	              if(game.frame % 8 == 0){
-                    new Enegi(game, f);
-	              }
-            }else if(count > 30 && count < 60){
-	              if(game.frame % 4 == 0){
-                    new Enemiku(game, f);
-	              }
-            }else if(count > 60 && count < 90){
-	              if(game.frame % 4 == 0){
-                    new Enegi(game, f);
+                    new Enemy(game);
 	              }
             }else if(count > 90){
-	              if(game.frame % 8 == 0){
-                    new Enemiku(game, f);
-                    new Enegi(game, f);
+	              if(game.frame % 4 == 0){
+                    new Enemy(game);
 	              }
             }
 	          game.frameCount++;
@@ -134,48 +125,52 @@ window.addEventListener('load', function(){
     });
     game.start();
 });
+
 // 敵クラスの動作を決めるひな形
-var Enemy = enchant.Class.create(enchant.Sprite, {
-    initialize: function (x, y, game, setImage, flag){
-        enchant.Sprite.call(this, x, y);
-        this.width = x;
-        this.height = y;
+var EnemyBase = enchant.Class.create(enchant.Sprite, {
+    initialize: function (game, setImage, posFlag, moveFlag){
+        enchant.Sprite.call(this, 12, 12);
+        this.width = 12;
+        this.height = 12;
         this.image = game.assets[setImage];
+        this.image.frame = 0;
 
         this.addEventListener('enterframe', function(e) {
             if(this.within(player,15)){       
-                game.rootScene.removeChild(Enemy);
+                game.rootScene.removeChild(this);
 	              player.frame = 3;
                 game.overFlag = true;
 	              game.end(game.score,"あなたの回避率は"+ game.score +"％です！");
 	          }else if(this.y > game.height || this.y < 0 || this.x > game.width || this.x < 0){
 	              game.rootScene.removeChild(this);
             }else{
-                if(setImage == "./img/enemy.png"){
-                    flag ? this.y += 3 : this.y -= 3;
+                if(moveFlag){
+                    posFlag ? this.y += 3 : this.y -= 3;
+                    this.frame = game.frame % 4;
                 }else{
-                    flag ? this.x += 3 : this.x -= 3;
+                    posFlag ? this.x += 3 : this.x -= 3;
+                    this.frame = game.frame % 4;
                 }
 	          }
         });
         game.rootScene.addChild(this);
     }
 });
-var Enemiku = enchant.Class.create(Enemy, {
-    initialize: function(game, flag){
-        Enemy.call(this, 12, 12, game, './img/enemy.png', flag);
-        this.x = rand(304);
-        flag ? this.y = 0 : this.y = game.height;
+var Enemy = enchant.Class.create(EnemyBase, {
+    initialize: function(game){
+        this.posFlag = (rand(2) == 0);
+        this.moveFlag = (rand(2) == 0);
+         this.img = rand(2) == 0 ? './img/enemy.png' : './img/negi.png'; 
+        EnemyBase.call(this, game, this.img, this.posFlag, this.moveFlag);
+        if(this.moveFlag){
+            this.x = rand(310);
+            this.posFlag ? this.y = 0 : this.y = game.height;
+        }else{
+            this.posFlag ? this.x = 0 : this.x = game.width;
+            this.y = rand(310);
+        }
     }
 });
-var Enegi = enchant.Class.create(Enemy, {
-    initialize: function(game, flag){
-        Enemy.call(this, 16, 16, game, './img/negi.png', flag);
-        flag ? this.x = 0 : this.x = game.width;
-        this.y = rand(304);
-    }
-});
-
 function rand(num){
     return Math.floor(Math.random() * num);
-};
+}
